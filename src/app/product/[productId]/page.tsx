@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { api } from "@/lib/api"
+import { serverApi } from "@/lib/api"
 
 type ProductDetailProps = {
   params: {
@@ -28,7 +28,7 @@ type ProductDetailProps = {
 }
 
 export default async function ProductDetail({ params }: ProductDetailProps) {
-  const { data: product } = await api.v1.productsControllerFindOne(
+  const { data: product } = await serverApi.v1.productsControllerFindOne(
     params.productId
   )
 

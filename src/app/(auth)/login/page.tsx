@@ -3,8 +3,10 @@
 import React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { login } from "@/actions/auth"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { isAxiosError } from "axios"
+import { setCookie } from "cookies-next"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -27,7 +29,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { toast } from "@/components/ui/use-toast"
 
-import { api } from "@/lib/api"
+import { serverApi } from "@/lib/api"
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -46,16 +48,11 @@ export default function Login() {
     setIsLoading(true)
 
     try {
-      await api.v1.authControllerLogin({
-        email: data.email,
-        password: data.password,
-      })
+      await login(data.email, data.password)
 
       router.replace("/account")
     } catch (error: unknown) {
       if (isAxiosError(error)) {
-        console.log(error.response?.data)
-
         toast({
           title: "Something went wrong.",
           description: error.response?.data.message,
@@ -108,7 +105,7 @@ export default function Login() {
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="me@example.com"
+                        placeholder="**********"
                         type="password"
                         {...field}
                       />

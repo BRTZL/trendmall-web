@@ -3,14 +3,14 @@ import {
   ProductFiltersProps,
 } from "@/components/product-filters"
 
-import { api } from "@/lib/api"
+import { serverApi } from "@/lib/api"
 
 type ListingLayoutProps = {
   children: React.ReactNode
 }
 
 export default async function ListingLayout({ children }: ListingLayoutProps) {
-  const { data: categories } = await api.v1.categoriesControllerFindAll()
+  const { data: categories } = await serverApi.v1.categoriesControllerFindAll()
 
   return (
     <div className="container mx-auto py-12">
