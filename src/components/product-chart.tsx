@@ -29,7 +29,7 @@ const chartConfig = {
 
 export function ProductChart() {
   return (
-    <ChartContainer config={chartConfig}>
+    <ChartContainer className="hidden md:block" config={chartConfig}>
       <AreaChart
         accessibilityLayer
         data={chartData}

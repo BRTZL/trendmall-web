@@ -6,7 +6,7 @@ export const serverApi = new Api({
   baseURL:
     process.env.NODE_ENV === "development"
       ? "http://localhost:3001"
-      : "https://trendmall-api.up.railway.app",
+      : "https://trendmall-api.up.railway.app/",
   withCredentials: true,
 })
 
