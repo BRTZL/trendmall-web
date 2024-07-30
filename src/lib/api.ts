@@ -3,10 +3,7 @@ import { cookies } from "next/headers"
 import { Api } from "@/types/api"
 
 export const serverApi = new Api({
-  baseURL:
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3001"
-      : "https://trendmall-api.up.railway.app/",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 })
 
