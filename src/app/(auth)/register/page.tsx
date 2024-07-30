@@ -29,24 +29,26 @@ import { Input } from "@/components/ui/input"
 import { clientApi } from "@/lib/client-api"
 import { showErrorToast } from "@/lib/toast"
 
-const loginSchema = z.object({
+const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 })
 
-type LoginSchemaType = z.infer<typeof loginSchema>
+type RegisterSchemaType = z.infer<typeof registerSchema>
 
-export default function Login() {
+export default function Register() {
   const router = useRouter()
-  const form = useForm<LoginSchemaType>({ resolver: zodResolver(loginSchema) })
+  const form = useForm<RegisterSchemaType>({
+    resolver: zodResolver(registerSchema),
+  })
 
   const [isLoading, setIsLoading] = React.useState(false)
 
-  async function onSubmit(data: LoginSchemaType) {
+  async function onSubmit(data: RegisterSchemaType) {
     setIsLoading(true)
 
     try {
-      const res = await clientApi.v1.authControllerLogin(data)
+      const res = await clientApi.v1.authControllerRegister(data)
 
       setCookie("accessToken", res.data.accessToken)
 
@@ -62,9 +64,9 @@ export default function Login() {
     <div className="flex size-full items-center justify-center">
       <Card className="mx-auto max-w-sm">
         <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardTitle className="text-2xl">Register</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your email below to register to your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -102,14 +104,14 @@ export default function Login() {
                 )}
               />
               <Button disabled={isLoading} className="w-full" type="submit">
-                Login
+                Register
               </Button>
             </form>
           </Form>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="underline">
-              Sign up
+            Do you have an account?{" "}
+            <Link href="/login" className="underline">
+              Login
             </Link>
           </div>
         </CardContent>
