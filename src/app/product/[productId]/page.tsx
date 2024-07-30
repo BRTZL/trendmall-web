@@ -43,7 +43,7 @@ export default async function ProductDetail({ params }: ProductDetailProps) {
                 <CarouselItem key={image.id}>
                   <Image
                     src={image.url}
-                    alt="Product Image"
+                    alt={product.name}
                     width={800}
                     height={800}
                     className="aspect-square object-contain"

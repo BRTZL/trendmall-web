@@ -54,6 +54,7 @@ export function ProductCard({ product }: ProductCardProps) {
           key={product.id}
           src={thumbnail}
           alt={product.name}
+          quality={65}
           width={300}
           height={300}
           className="size-[300px] w-full bg-muted object-contain"
