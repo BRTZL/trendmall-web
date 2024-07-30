@@ -1,67 +1,50 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
+
+# Setup env variabless for yarn and nextjs
+# https://nextjs.org/telemetry
+ENV NEXT_TELEMETRY_DISABLED=1 NODE_ENV=production YARN_VERSION=4.2.2
+
+# update dependencies, add libc6-compat and dumb-init to the base image
+RUN apk update && apk upgrade && apk add --no-cache libc6-compat && apk add dumb-init
+
+# install and use yarn 4.x
+RUN corepack enable && corepack prepare yarn@${YARN_VERSION}
+
+# add the user and group we'll need in our final image
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
 # Install dependencies only when needed
-FROM base AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
-
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
-
-
-# Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+
 COPY . .
+COPY package.json yarn.lock .yarnrc.yml ./
+COPY .yarn ./.yarn
+RUN yarn install --immutable
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED 1
+# Add `ARG` instructions below if you need `NEXT_PUBLIC_` variables
+# then put the value on your fly.toml
+# Example:
+# ARG NEXT_PUBLIC_SOMETHING
 
-RUN \
-  if [ -f yarn.lock ]; then yarn run build; \
-  elif [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+# Build the app (in standalone mode based on next.config.js)
+RUN yarn build
 
 # Production image, copy all the files and run next
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
-# Uncomment the following line in case you want to disable telemetry during runtime.
-# ENV NEXT_TELEMETRY_DISABLED 1
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /app/public ./public
-
-# Set the correct permission for prerender cache
-RUN mkdir .next
-RUN chown nextjs:nodejs .next
-
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
+# copy the public folder from the project as this is not included in the build process
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+# copy the standalone folder inside the .next folder generated from the build process
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+# copy the static folder inside the .next folder generated from the build process
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
-EXPOSE 3000
+EXPOSE 8038
+ENV PORT 8038
 
-ENV PORT 3000
-
-# server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/next-config-js/output
-CMD HOSTNAME="0.0.0.0" node server.js
+CMD ["dumb-init","node","server.js"]
