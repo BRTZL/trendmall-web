@@ -20,7 +20,7 @@ export default async function Listing(props: ListingPageProps) {
 
   return (
     <div>
-      <div className="container mx-auto grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
         {products.data.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

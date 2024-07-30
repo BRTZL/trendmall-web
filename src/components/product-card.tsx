@@ -1,7 +1,14 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useAddToCart } from "@/queries/cart"
+import { Loader2, ShoppingBasket } from "lucide-react"
 
 import { ProductEntity } from "@/types/api"
+import { isUserAuthenticatedClient } from "@/lib/client-session"
+import { showErrorToast, showSuccessToast } from "@/lib/toast"
 
 import { Button } from "./ui/button"
 
@@ -10,29 +17,62 @@ type ProductCardProps = {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const router = useRouter()
+
   const thumbnail = product.images[0]?.url || "/product-placeholder.png"
 
+  const { mutate: addToCart, isPending } = useAddToCart()
+
+  const handleButtonClick = () => {
+    if (!isUserAuthenticatedClient()) {
+      showErrorToast(null, "You need to be logged in to add to cart")
+      return router.push("/login")
+    }
+
+    addToCart(
+      {
+        productId: product.id,
+        quantity: 1,
+      },
+      {
+        onSuccess: () => {
+          showSuccessToast("Added to cart")
+        },
+        onError: (error) => {
+          showErrorToast(error, "Failed to add to cart")
+        },
+      }
+    )
+  }
+
   return (
-    <Link
-      href={`/product/${product.id}`}
-      className="flex flex-col overflow-hidden rounded-lg bg-background shadow-lg transition-shadow duration-200 ease-in-out hover:z-10 hover:-translate-y-1 hover:rotate-2 hover:scale-105 hover:cursor-pointer hover:shadow-xl"
-    >
-      <Image
-        id={product.id}
-        key={product.id}
-        src={thumbnail}
-        alt="Product 1"
-        width={300}
-        height={300}
-        className="size-[300px] w-full bg-muted object-contain"
-      />
-      <div className="p-4">
-        <h3 className="mb-2 text-lg font-semibold">{product.name}</h3>
-        <p className="mb-4 text-base font-medium">${product.price / 100}</p>
-        <Button size="sm" className="w-full">
-          Add to Cart
-        </Button>
-      </div>
-    </Link>
+    <div className="relative flex flex-col overflow-hidden rounded-lg bg-background shadow-lg transition-shadow duration-200 ease-in-out hover:z-10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl">
+      <Link href={`/product/${product.id}`} className="flex flex-col">
+        <Image
+          id={product.id}
+          key={product.id}
+          src={thumbnail}
+          alt={product.name}
+          width={300}
+          height={300}
+          className="size-[300px] w-full bg-muted object-contain"
+        />
+        <div className="flex flex-col p-4">
+          <h3 className="mb-2 text-lg font-semibold">{product.name}</h3>
+          <p className="mb-4 text-base font-medium">${product.price / 100}</p>
+        </div>
+      </Link>
+      <Button
+        size="icon"
+        className="absolute right-4 top-4 z-10 hover:cursor-pointer"
+        onClick={handleButtonClick}
+      >
+        {isPending ? (
+          <Loader2 className="size-6 animate-spin" />
+        ) : (
+          <ShoppingBasket className="size-6" />
+        )}
+      </Button>
+    </div>
   )
 }

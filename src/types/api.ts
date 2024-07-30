@@ -1,12 +1,3 @@
-import type {
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-  HeadersDefaults,
-  ResponseType,
-} from "axios"
-import axios from "axios"
-
 /* eslint-disable */
 /* tslint:disable */
 /*
@@ -18,6 +9,9 @@ import axios from "axios"
  * ---------------------------------------------------------------
  */
 
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from "axios"
+import axios from "axios"
+
 export interface LoginDto {
   email: string
   password: string
@@ -25,6 +19,7 @@ export interface LoginDto {
 
 export interface AuthEntity {
   accessToken: string
+  expiresIn: number
 }
 
 export interface RegisterDto {
@@ -195,8 +190,7 @@ export interface OrderEntity {
 
 export type QueryParamsType = Record<string | number, any>
 
-export interface FullRequestParams
-  extends Omit<AxiosRequestConfig, "data" | "params" | "url" | "responseType"> {
+export interface FullRequestParams extends Omit<AxiosRequestConfig, "data" | "params" | "url" | "responseType"> {
   /** set parameter to `true` for call `securityWorker` for this request */
   secure?: boolean
   /** request path */
@@ -211,13 +205,9 @@ export interface FullRequestParams
   body?: unknown
 }
 
-export type RequestParams = Omit<
-  FullRequestParams,
-  "body" | "method" | "query" | "path"
->
+export type RequestParams = Omit<FullRequestParams, "body" | "method" | "query" | "path">
 
-export interface ApiConfig<SecurityDataType = unknown>
-  extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
+export interface ApiConfig<SecurityDataType = unknown> extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
   securityWorker?: (
     securityData: SecurityDataType | null
   ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void
@@ -239,16 +229,8 @@ export class HttpClient<SecurityDataType = unknown> {
   private secure?: boolean
   private format?: ResponseType
 
-  constructor({
-    securityWorker,
-    secure,
-    format,
-    ...axiosConfig
-  }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({
-      ...axiosConfig,
-      baseURL: axiosConfig.baseURL || "",
-    })
+  constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
+    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "" })
     this.secure = secure
     this.format = format
     this.securityWorker = securityWorker
@@ -258,10 +240,7 @@ export class HttpClient<SecurityDataType = unknown> {
     this.securityData = data
   }
 
-  protected mergeRequestParams(
-    params1: AxiosRequestConfig,
-    params2?: AxiosRequestConfig
-  ): AxiosRequestConfig {
+  protected mergeRequestParams(params1: AxiosRequestConfig, params2?: AxiosRequestConfig): AxiosRequestConfig {
     const method = params1.method || (params2 && params2.method)
 
     return {
@@ -269,11 +248,7 @@ export class HttpClient<SecurityDataType = unknown> {
       ...params1,
       ...(params2 || {}),
       headers: {
-        ...((method &&
-          this.instance.defaults.headers[
-            method.toLowerCase() as keyof HeadersDefaults
-          ]) ||
-          {}),
+        ...((method && this.instance.defaults.headers[method.toLowerCase() as keyof HeadersDefaults]) || {}),
         ...(params1.headers || {}),
         ...((params2 && params2.headers) || {}),
       },
@@ -294,15 +269,11 @@ export class HttpClient<SecurityDataType = unknown> {
     }
     return Object.keys(input || {}).reduce((formData, key) => {
       const property = input[key]
-      const propertyContent: any[] =
-        property instanceof Array ? property : [property]
+      const propertyContent: any[] = property instanceof Array ? property : [property]
 
       for (const formItem of propertyContent) {
         const isFileType = formItem instanceof Blob || formItem instanceof File
-        formData.append(
-          key,
-          isFileType ? formItem : this.stringifyFormItem(formItem)
-        )
+        formData.append(key, isFileType ? formItem : this.stringifyFormItem(formItem))
       }
 
       return formData
@@ -326,21 +297,11 @@ export class HttpClient<SecurityDataType = unknown> {
     const requestParams = this.mergeRequestParams(params, secureParams)
     const responseFormat = format || this.format || undefined
 
-    if (
-      type === ContentType.FormData &&
-      body &&
-      body !== null &&
-      typeof body === "object"
-    ) {
+    if (type === ContentType.FormData && body && body !== null && typeof body === "object") {
       body = this.createFormData(body as Record<string, unknown>)
     }
 
-    if (
-      type === ContentType.Text &&
-      body &&
-      body !== null &&
-      typeof body !== "string"
-    ) {
+    if (type === ContentType.Text && body && body !== null && typeof body !== "string") {
       body = JSON.stringify(body)
     }
 
@@ -348,9 +309,7 @@ export class HttpClient<SecurityDataType = unknown> {
       ...requestParams,
       headers: {
         ...(requestParams.headers || {}),
-        ...(type && type !== ContentType.FormData
-          ? { "Content-Type": type }
-          : {}),
+        ...(type ? { "Content-Type": type } : {}),
       },
       params: query,
       responseType: responseFormat,
@@ -367,9 +326,7 @@ export class HttpClient<SecurityDataType = unknown> {
  *
  * The Trendmall API description
  */
-export class Api<
-  SecurityDataType extends unknown,
-> extends HttpClient<SecurityDataType> {
+export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   v1 = {
     /**
      * No description
@@ -409,15 +366,34 @@ export class Api<
      * No description
      *
      * @tags Users
-     * @name UsersControllerMe
+     * @name UsersControllerGetMe
      * @request GET:/v1/users/me
      * @secure
      */
-    usersControllerMe: (params: RequestParams = {}) =>
+    usersControllerGetMe: (params: RequestParams = {}) =>
       this.request<UserEntity, any>({
         path: `/v1/users/me`,
         method: "GET",
         secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Users
+     * @name UsersControllerUpdateMe
+     * @request PATCH:/v1/users/me
+     * @secure
+     */
+    usersControllerUpdateMe: (data: UpdateUserDto, params: RequestParams = {}) =>
+      this.request<UserEntity, any>({
+        path: `/v1/users/me`,
+        method: "PATCH",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -447,11 +423,7 @@ export class Api<
      * @request PATCH:/v1/users/{id}
      * @secure
      */
-    usersControllerUpdate: (
-      id: string,
-      data: UpdateUserDto,
-      params: RequestParams = {}
-    ) =>
+    usersControllerUpdate: (id: string, data: UpdateUserDto, params: RequestParams = {}) =>
       this.request<UserEntity, any>({
         path: `/v1/users/${id}`,
         method: "PATCH",
@@ -487,10 +459,7 @@ export class Api<
      * @request POST:/v1/categories
      * @secure
      */
-    categoriesControllerCreate: (
-      data: CreateCategoryDto,
-      params: RequestParams = {}
-    ) =>
+    categoriesControllerCreate: (data: CreateCategoryDto, params: RequestParams = {}) =>
       this.request<CategoryEntity, any>({
         path: `/v1/categories`,
         method: "POST",
@@ -539,11 +508,7 @@ export class Api<
      * @request PATCH:/v1/categories/{id}
      * @secure
      */
-    categoriesControllerUpdate: (
-      id: string,
-      data: UpdateCategoryDto,
-      params: RequestParams = {}
-    ) =>
+    categoriesControllerUpdate: (id: string, data: UpdateCategoryDto, params: RequestParams = {}) =>
       this.request<CategoryEntity, any>({
         path: `/v1/categories/${id}`,
         method: "PATCH",
@@ -579,10 +544,7 @@ export class Api<
      * @request POST:/v1/products
      * @secure
      */
-    productsControllerCreate: (
-      data: CreateProductDto,
-      params: RequestParams = {}
-    ) =>
+    productsControllerCreate: (data: CreateProductDto, params: RequestParams = {}) =>
       this.request<ProductEntity, any>({
         path: `/v1/products`,
         method: "POST",
@@ -643,11 +605,7 @@ export class Api<
      * @request PATCH:/v1/products/{id}
      * @secure
      */
-    productsControllerUpdate: (
-      id: string,
-      data: UpdateProductDto,
-      params: RequestParams = {}
-    ) =>
+    productsControllerUpdate: (id: string, data: UpdateProductDto, params: RequestParams = {}) =>
       this.request<ProductEntity, any>({
         path: `/v1/products/${id}`,
         method: "PATCH",
@@ -683,10 +641,7 @@ export class Api<
      * @request POST:/v1/addresses
      * @secure
      */
-    addressesControllerCreate: (
-      data: CreateAddressDto,
-      params: RequestParams = {}
-    ) =>
+    addressesControllerCreate: (data: CreateAddressDto, params: RequestParams = {}) =>
       this.request<AddressEntity, any>({
         path: `/v1/addresses`,
         method: "POST",
@@ -739,11 +694,7 @@ export class Api<
      * @request PATCH:/v1/addresses/{id}
      * @secure
      */
-    addressesControllerUpdate: (
-      id: string,
-      data: UpdateAddressDto,
-      params: RequestParams = {}
-    ) =>
+    addressesControllerUpdate: (id: string, data: UpdateAddressDto, params: RequestParams = {}) =>
       this.request<AddressEntity, any>({
         path: `/v1/addresses/${id}`,
         method: "PATCH",
@@ -779,10 +730,7 @@ export class Api<
      * @request POST:/v1/cart/add
      * @secure
      */
-    cartControllerAddItemToCart: (
-      data: AddItemToCartDto,
-      params: RequestParams = {}
-    ) =>
+    cartControllerAddItemToCart: (data: AddItemToCartDto, params: RequestParams = {}) =>
       this.request<CartItemEntity[], any>({
         path: `/v1/cart/add`,
         method: "POST",
@@ -801,10 +749,7 @@ export class Api<
      * @request POST:/v1/cart/remove
      * @secure
      */
-    cartControllerRemoveItemFromCart: (
-      data: RemoveItemFromCartDto,
-      params: RequestParams = {}
-    ) =>
+    cartControllerRemoveItemFromCart: (data: RemoveItemFromCartDto, params: RequestParams = {}) =>
       this.request<CartItemEntity[], any>({
         path: `/v1/cart/remove`,
         method: "POST",
@@ -840,10 +785,7 @@ export class Api<
      * @request POST:/v1/orders
      * @secure
      */
-    ordersControllerCheckout: (
-      data: CreateOrderDto,
-      params: RequestParams = {}
-    ) =>
+    ordersControllerCheckout: (data: CreateOrderDto, params: RequestParams = {}) =>
       this.request<OrderEntity, any>({
         path: `/v1/orders`,
         method: "POST",
