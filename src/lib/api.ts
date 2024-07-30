@@ -3,7 +3,10 @@ import { cookies } from "next/headers"
 import { Api } from "@/types/api"
 
 export const serverApi = new Api({
-  baseURL: "http://localhost:3001",
+  baseURL:
+    process.env.NODE_ENV === "development"
+      ? "http://localhost:3001"
+      : "magnificent-patience-production.up.railway.app",
   withCredentials: true,
 })
 

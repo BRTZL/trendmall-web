@@ -97,7 +97,7 @@ export function ProductPagination({ paginationData }: ProductPaginationProps) {
             className={currentPage === 1 ? "pointer-events-none" : ""}
           />
         </PaginationItem>
-        {renderPaginationLinks()}
+        <div className="hidden md:flex">{renderPaginationLinks()}</div>
         <PaginationItem>
           <PaginationNext
             onClick={onClick(Math.min(currentPage + 1, totalPages))}

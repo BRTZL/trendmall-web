@@ -9,6 +9,7 @@ import { Loader2, ShoppingBasket } from "lucide-react"
 import { ProductEntity } from "@/types/api"
 import { isUserAuthenticatedClient } from "@/lib/client-session"
 import { showErrorToast, showSuccessToast } from "@/lib/toast"
+import { cn } from "@/lib/utils"
 
 import { Button } from "./ui/button"
 
@@ -21,7 +22,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const thumbnail = product.images[0]?.url || "/product-placeholder.png"
 
-  const { mutate: addToCart, isPending } = useAddToCart()
+  const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart()
 
   const handleButtonClick = () => {
     if (!isUserAuthenticatedClient()) {
@@ -36,10 +37,10 @@ export function ProductCard({ product }: ProductCardProps) {
       },
       {
         onSuccess: () => {
-          showSuccessToast("Added to cart")
+          showSuccessToast(`${product.name} added to cart`)
         },
         onError: (error) => {
-          showErrorToast(error, "Failed to add to cart")
+          showErrorToast(error, `Failed to add ${product.name} to cart`)
         },
       }
     )
@@ -64,10 +65,14 @@ export function ProductCard({ product }: ProductCardProps) {
       </Link>
       <Button
         size="icon"
-        className="absolute right-4 top-4 z-10 hover:cursor-pointer"
+        className={cn(
+          "absolute right-4 top-4",
+          isAddingToCart && "cursor-not-allowed"
+        )}
         onClick={handleButtonClick}
+        disabled={isAddingToCart}
       >
-        {isPending ? (
+        {isAddingToCart ? (
           <Loader2 className="size-6 animate-spin" />
         ) : (
           <ShoppingBasket className="size-6" />
