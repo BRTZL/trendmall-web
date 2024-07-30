@@ -2,7 +2,6 @@ import { redirect } from "next/navigation"
 import { format } from "date-fns"
 
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -27,8 +26,6 @@ import { serverApi } from "@/lib/api"
 import { isUserAuthenticated } from "@/lib/session"
 
 import { AddressesList } from "./addresses-list"
-import { CreateAddressForm } from "./create-address-form"
-import { EditAddressForm } from "./edit-address-form"
 import { PersonalInfoForm } from "./personal-info-form"
 
 export default async function Account() {
