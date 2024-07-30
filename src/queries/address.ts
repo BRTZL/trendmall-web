@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { AddressEntity, CreateAddressDto, UpdateAddressDto } from "@/types/api"
 import { clientApi } from "@/lib/client-api"
 
-export function useGetAddresses() {
+export function useGetAddresses(addresses: AddressEntity[] = []) {
   return useQuery({
     queryKey: ["addresses"],
     queryFn: async () => {
@@ -11,7 +11,7 @@ export function useGetAddresses() {
 
       return res.data
     },
-    initialData: [],
+    initialData: addresses,
   })
 }
 

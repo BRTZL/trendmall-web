@@ -44,8 +44,6 @@ type EditAddressFormProps = {
 }
 
 export function EditAddressForm({ address }: EditAddressFormProps) {
-  const router = useRouter()
-
   const [isUpdateMode, setIsUpdateMode] = useState(false)
 
   const { mutate: editAddress, isPending: isUpdating } = useEditAddress(
@@ -69,7 +67,6 @@ export function EditAddressForm({ address }: EditAddressFormProps) {
   const onSubmit = form.handleSubmit((data) => {
     editAddress(data, {
       onSuccess: () => {
-        router.refresh()
         setIsUpdateMode(false)
         showSuccessToast("Address editd")
       },
@@ -82,7 +79,6 @@ export function EditAddressForm({ address }: EditAddressFormProps) {
   const onRemove = () => {
     removeAddress(undefined, {
       onSuccess: () => {
-        router.refresh()
         showSuccessToast("Address removed")
       },
       onError: (error) => {

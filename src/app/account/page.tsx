@@ -26,6 +26,7 @@ import { LogoutButton } from "@/components/logout-button"
 import { serverApi } from "@/lib/api"
 import { isUserAuthenticated } from "@/lib/session"
 
+import { AddressesList } from "./addresses-list"
 import { CreateAddressForm } from "./create-address-form"
 import { EditAddressForm } from "./edit-address-form"
 import { PersonalInfoForm } from "./personal-info-form"
@@ -113,16 +114,7 @@ export default async function Account() {
           </div>
         </TabsContent>
         <TabsContent value="addresses">
-          <div className="px-4 py-8 md:px-6">
-            <h1 className="text-2xl font-bold">Addresses</h1>
-            <div className="mt-6 grid gap-6">
-              {addresses.data.map((address) => (
-                <EditAddressForm key={address.id} address={address} />
-              ))}
-
-              <CreateAddressForm />
-            </div>
-          </div>
+          <AddressesList addresses={addresses.data} />
         </TabsContent>
         <TabsContent value="account">
           <div className="px-4 py-8 md:px-6">

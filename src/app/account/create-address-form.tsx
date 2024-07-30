@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useState } from "react"
 import { useCreateAddress } from "@/queries/address"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
@@ -38,29 +38,42 @@ const createAddressSchema = z.object({
 type CreateAddressSchemaType = z.infer<typeof createAddressSchema>
 
 export function CreateAddressForm() {
-  const router = useRouter()
+  const [isCreated, setIsCreated] = useState(false)
+
   const { mutate: createAddress, isPending } = useCreateAddress()
 
   const form = useForm<CreateAddressSchemaType>({
     resolver: zodResolver(createAddressSchema),
   })
 
-  const onSubmit = form.handleSubmit((data) => {
+  function onSubmit(data: CreateAddressSchemaType) {
     createAddress(data, {
       onSuccess: () => {
-        router.refresh()
-        form.reset()
+        form.reset({})
+        setIsCreated(true)
         showSuccessToast("Address created")
       },
       onError: (error) => {
         showErrorToast(error, "Failed to create address")
       },
     })
-  })
+  }
+
+  if (isCreated) {
+    return (
+      <div className="flex items-center justify-between rounded-lg border border-dashed bg-card p-6 text-card-foreground shadow-sm">
+        <div className="flex flex-col gap-2">
+          <CardTitle>Address Created</CardTitle>
+          <p>Your address has been created successfully.</p>
+        </div>
+        <Button onClick={() => setIsCreated(false)}>Add Another Address</Button>
+      </div>
+    )
+  }
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <Card>
           <CardHeader>
             <CardTitle>Add New Address</CardTitle>
