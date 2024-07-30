@@ -4,6 +4,6 @@ export const clientApi = new Api({
   baseURL:
     process.env.NODE_ENV === "development"
       ? "http://localhost:3001"
-      : "magnificent-patience-production.up.railway.app",
+      : "https://magnificent-patience-production.up.railway.app/",
   withCredentials: true,
 })
