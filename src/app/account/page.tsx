@@ -53,7 +53,7 @@ export default async function Account() {
             <h1 className="text-2xl font-bold">Orders</h1>
             <div className="mt-6 grid gap-6">
               {orders.data.map((order) => (
-                <Card>
+                <Card key={order.id}>
                   <CardHeader className="flex flex-row items-center justify-between">
                     <div className="flex flex-col space-y-1.5">
                       <CardTitle>Order #{order.id}</CardTitle>
@@ -79,7 +79,7 @@ export default async function Account() {
                       </TableHeader>
                       <TableBody>
                         {order.items.map((orderItem) => (
-                          <TableRow>
+                          <TableRow key={orderItem.id}>
                             <TableCell>{orderItem.product.name}</TableCell>
                             <TableCell>{orderItem.quantity}</TableCell>
                             <TableCell>${orderItem.price / 100}</TableCell>
