@@ -1,9 +1,11 @@
+import "server-only"
+
 import { cookies } from "next/headers"
 
 import { Api } from "@/types/api"
 
 export const serverApi = new Api({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.API_URL,
   withCredentials: true,
 })
 
