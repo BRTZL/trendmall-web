@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { AddressEntity, CreateAddressDto, UpdateAddressDto } from "@/types/api"
-import { clientApi } from "@/lib/client-api"
+import { clientApi } from "@/lib/api"
 
 export function useGetAddresses(addresses: AddressEntity[] = []) {
   return useQuery({

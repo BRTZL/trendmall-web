@@ -1,10 +1,9 @@
-import { useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { AddItemToCartDto, CartItemEntity } from "@/types/api"
-import { clientApi } from "@/lib/client-api"
+import { clientApi } from "@/lib/api"
 
-export function useGetCart(initialData: CartItemEntity[]) {
+export function useGetCart(initialData: CartItemEntity[] = []) {
   return useQuery({
     queryKey: ["cart"],
     queryFn: async () => {
@@ -17,7 +16,6 @@ export function useGetCart(initialData: CartItemEntity[]) {
 }
 
 export function useAddToCart() {
-  const router = useRouter()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -28,13 +26,11 @@ export function useAddToCart() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["cart"], data)
-      router.prefetch("/cart")
     },
   })
 }
 
 export function useRemoveFromCart() {
-  const router = useRouter()
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -45,7 +41,6 @@ export function useRemoveFromCart() {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["cart"], data)
-      router.prefetch("/cart")
     },
   })
 }

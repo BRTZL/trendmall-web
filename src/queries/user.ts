@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query"
 
 import { UpdateUserDto } from "@/types/api"
-import { clientApi } from "@/lib/client-api"
+import { clientApi } from "@/lib/api"
 
 export function useUpdateAccount() {
   return useMutation({

@@ -1,9 +1,6 @@
-import {
-  ProductFilters,
-  ProductFiltersProps,
-} from "@/components/product-filters"
+import { ProductFilters } from "@/components/product-filters"
 
-import { serverApi } from "@/lib/api"
+import { serverApi } from "@/lib/api.server"
 
 type ListingLayoutProps = {
   children: React.ReactNode

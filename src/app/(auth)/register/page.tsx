@@ -4,7 +4,6 @@ import React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { setCookie } from "cookies-next"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -26,7 +25,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
-import { clientApi } from "@/lib/client-api"
+import { clientApi } from "@/lib/api"
 import { showErrorToast } from "@/lib/toast"
 
 const registerSchema = z.object({
@@ -48,9 +47,7 @@ export default function Register() {
     setIsLoading(true)
 
     try {
-      const res = await clientApi.v1.authControllerRegister(data)
-
-      setCookie("accessToken", res.data.accessToken)
+      await clientApi.v1.authControllerRegister(data)
 
       router.replace("/account")
     } catch (error) {

@@ -18,24 +18,23 @@ import { ProductEntity } from "@/types/api"
 import { isUserAuthenticatedClient } from "@/lib/client-session"
 import { showErrorToast, showSuccessToast } from "@/lib/toast"
 import { cn } from "@/lib/utils"
+import { useRedirect } from "@/hooks/auth"
 
 type AddToCartButtonProps = {
   product: ProductEntity
 }
 
 export function AddToCartButton({ product }: AddToCartButtonProps) {
-  const router = useRouter()
-
-  const isAuthenticated = isUserAuthenticatedClient()
+  const { redirectTo } = useRedirect()
 
   const [quantity, setQuantity] = useState(1)
 
   const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart()
 
   function handleAddToCart() {
-    if (!isAuthenticated) {
+    if (!isUserAuthenticatedClient()) {
       showErrorToast(null, "You need to be logged in to add to cart")
-      return router.push("/login")
+      return redirectTo("/login")
     }
 
     addToCart(

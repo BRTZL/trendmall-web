@@ -5,7 +5,7 @@ import { useGetCart } from "@/queries/cart"
 import { ShoppingCart } from "lucide-react"
 
 export function CartButton() {
-  const { data } = useGetCart([])
+  const { data } = useGetCart()
 
   return (
     <Link

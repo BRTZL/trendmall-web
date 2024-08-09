@@ -1,8 +1,8 @@
 "use client"
 
+import { useMemo } from "react"
 import { useGetCart } from "@/queries/cart"
 
-import { Button } from "@/components/ui/button"
 import { CartItem } from "@/components/cart-item"
 
 import { CartItemEntity } from "@/types/api"
@@ -14,17 +14,21 @@ type CartFormProps = {
 }
 
 export function CartForm({ items }: CartFormProps) {
-  const { data } = useGetCart(items)
+  const { data: cartItems } = useGetCart(items)
 
-  const total = data.reduce(
-    (acc, item) => acc + (item.product.price * item.quantity) / 100,
-    0
-  )
+  const total = useMemo(() => {
+    return (
+      cartItems.reduce(
+        (acc, item) => acc + item.product.price * item.quantity,
+        0
+      ) / 100
+    )
+  }, [cartItems])
 
   return (
     <div>
       <div className="grid gap-8">
-        {data.map((item) => (
+        {cartItems.map((item) => (
           <CartItem key={item.id} item={item} />
         ))}
       </div>

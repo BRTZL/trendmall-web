@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { AUTHENTICATION_COOKIE_NAME } from "@/constants"
 import { useQueryClient } from "@tanstack/react-query"
 import { deleteCookie } from "cookies-next"
 
@@ -11,7 +12,7 @@ export function LogoutButton() {
   const router = useRouter()
 
   function handleLogout() {
-    deleteCookie("accessToken")
+    deleteCookie(AUTHENTICATION_COOKIE_NAME)
     queryClient.clear()
 
     router.replace("/login")

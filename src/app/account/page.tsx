@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation"
 import { format } from "date-fns"
 
 import { Badge } from "@/components/ui/badge"
@@ -22,18 +21,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { EmptyPlaceholder } from "@/components/empty-placeholder"
 import { LogoutButton } from "@/components/logout-button"
 
-import { serverApi } from "@/lib/api"
-import { isUserAuthenticated } from "@/lib/session"
+import { serverApi } from "@/lib/api.server"
+import { ensureUserIsAuthenticated } from "@/lib/session"
 
 import { AddressesList } from "./addresses-list"
 import { PersonalInfoForm } from "./personal-info-form"
 
 export default async function Account() {
-  const isAuthenticated = await isUserAuthenticated()
-
-  if (!isAuthenticated) {
-    redirect("/login")
-  }
+  await ensureUserIsAuthenticated()
 
   const user = await serverApi.v1.usersControllerGetMe()
   const orders = await serverApi.v1.ordersControllerFindAll()

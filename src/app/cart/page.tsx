@@ -1,20 +1,15 @@
 import Link from "next/link"
-import { redirect } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import { EmptyPlaceholder } from "@/components/empty-placeholder"
 
-import { serverApi } from "@/lib/api"
-import { isUserAuthenticated } from "@/lib/session"
+import { serverApi } from "@/lib/api.server"
+import { ensureUserIsAuthenticated } from "@/lib/session"
 
 import { CartForm } from "./cart-form"
 
 export default async function Cart() {
-  const isAuthenticated = await isUserAuthenticated()
-
-  if (!isAuthenticated) {
-    redirect("/login")
-  }
+  await ensureUserIsAuthenticated()
 
   const cart = await serverApi.v1.cartControllerGetCart()
 

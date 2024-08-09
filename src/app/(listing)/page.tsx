@@ -1,7 +1,7 @@
 import { ProductCard } from "@/components/product-card"
 import { ProductPagination } from "@/components/product-pagination"
 
-import { serverApi } from "@/lib/api"
+import { serverApi } from "@/lib/api.server"
 
 type ListingPageProps = {
   searchParams: {

@@ -9,6 +9,7 @@ import { TrendingUp } from "lucide-react"
 import { Toaster } from "@/components/ui/toaster"
 import { AccountButton } from "@/components/account-button"
 import { CartButton } from "@/components/cart-button"
+import { LoginButton } from "@/components/login-button"
 import { ReactQueryProvider } from "@/components/react-query-provider"
 
 import { isUserAuthenticated } from "@/lib/session"
@@ -53,7 +54,7 @@ export default async function RootLayout({
                 </Link>
                 <div className="flex items-center gap-6">
                   <CartButton />
-                  <AccountButton />
+                  {isAuthenticated ? <AccountButton /> : <LoginButton />}
                 </div>
               </div>
             </header>

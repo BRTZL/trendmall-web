@@ -14,7 +14,7 @@ import { AddToCartButton } from "@/components/add-to-cart-button"
 import { ProductChart } from "@/components/product-chart"
 import { ProductReview } from "@/components/product-review"
 
-import { serverApi } from "@/lib/api"
+import { serverApi } from "@/lib/api.server"
 
 type ProductDetailProps = {
   params: {

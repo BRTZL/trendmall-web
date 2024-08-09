@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 
-import { clientApi } from "@/lib/client-api"
+import { clientApi } from "@/lib/api"
 
 export function useCheckout() {
   return useMutation({
