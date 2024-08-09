@@ -4,6 +4,7 @@ import { Inter as FontSans } from "next/font/google"
 import "./globals.css"
 
 import Link from "next/link"
+import { Paths } from "@/constants"
 import { TrendingUp } from "lucide-react"
 
 import { Toaster } from "@/components/ui/toaster"
@@ -45,7 +46,7 @@ export default async function RootLayout({
             <header className="bg-primary py-4 text-primary-foreground">
               <div className="container mx-auto flex items-center justify-between">
                 <Link
-                  href="/"
+                  href={Paths.home}
                   className="flex items-center gap-2"
                   prefetch={false}
                 >

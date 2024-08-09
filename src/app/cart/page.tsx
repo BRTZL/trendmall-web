@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Paths } from "@/constants"
 
 import { Button } from "@/components/ui/button"
 import { EmptyPlaceholder } from "@/components/empty-placeholder"
@@ -24,7 +25,7 @@ export default async function Cart() {
             You have no items in your cart. Start adding some!
           </EmptyPlaceholder.Description>
 
-          <Link href="/">
+          <Link href={Paths.home}>
             <Button>Browse products</Button>
           </Link>
         </EmptyPlaceholder>
