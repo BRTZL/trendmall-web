@@ -1,6 +1,6 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 import {
   Pagination,
@@ -56,13 +56,14 @@ const getVisiblePages = (
 
 export function ProductPagination({ paginationData }: ProductPaginationProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const totalPages = Math.ceil(paginationData.total / paginationData.limit)
   const currentPage = paginationData.page
 
   const onClick = (page: number | string) => () => {
-    const url = new URL(window.location.href)
-    url.searchParams.set("page", page.toString())
-    router.push(url.toString())
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("page", page.toString())
+    router.push(`?${params.toString()}`)
   }
 
   const renderPaginationLinks = () => {

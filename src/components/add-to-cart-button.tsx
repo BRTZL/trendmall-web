@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { useAddToCart } from "@/queries/cart"
 import { Loader2 } from "lucide-react"
 
@@ -15,28 +14,19 @@ import {
 } from "@/components/ui/select"
 
 import { ProductEntity } from "@/types/api"
-import { isUserAuthenticatedClient } from "@/lib/client-session"
 import { showErrorToast, showSuccessToast } from "@/lib/toast"
 import { cn } from "@/lib/utils"
-import { useRedirect } from "@/hooks/auth"
 
 type AddToCartButtonProps = {
   product: ProductEntity
 }
 
 export function AddToCartButton({ product }: AddToCartButtonProps) {
-  const { redirectTo } = useRedirect()
-
   const [quantity, setQuantity] = useState(1)
 
   const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart()
 
   function handleAddToCart() {
-    if (!isUserAuthenticatedClient()) {
-      showErrorToast(null, "You need to be logged in to add to cart")
-      return redirectTo("/login")
-    }
-
     addToCart(
       {
         quantity,

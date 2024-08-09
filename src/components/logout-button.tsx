@@ -1,22 +1,21 @@
 "use client"
 
-import { useRouter } from "next/navigation"
-import { AUTHENTICATION_COOKIE_NAME } from "@/constants"
+import { logout } from "@/actions/auth"
 import { useQueryClient } from "@tanstack/react-query"
-import { deleteCookie } from "cookies-next"
+
+import { useRedirect } from "@/hooks/auth"
 
 import { Button } from "./ui/button"
 
 export function LogoutButton() {
   const queryClient = useQueryClient()
-  const router = useRouter()
+  const { redirectTo } = useRedirect()
 
-  function handleLogout() {
-    deleteCookie(AUTHENTICATION_COOKIE_NAME)
+  async function handleLogout() {
+    await logout()
     queryClient.clear()
 
-    router.replace("/login")
-    window.location.reload()
+    redirectTo("/login")
   }
 
   return (

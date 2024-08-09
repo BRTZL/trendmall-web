@@ -1,7 +1,5 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { useUpdateAccount } from "@/queries/user"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
@@ -41,8 +39,6 @@ type PersonalInfoFormProps = {
 }
 
 export function PersonalInfoForm({ user }: PersonalInfoFormProps) {
-  const router = useRouter()
-
   const { mutate: updateAccount, isPending: isUpdating } = useUpdateAccount()
 
   const form = useForm<PersonalInfoSchemaType>({
@@ -56,7 +52,6 @@ export function PersonalInfoForm({ user }: PersonalInfoFormProps) {
   const onSubmit = form.handleSubmit((data) => {
     updateAccount(data, {
       onSuccess: () => {
-        router.refresh()
         showSuccessToast("Account updated")
       },
       onError: (error) => {

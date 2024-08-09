@@ -2,7 +2,6 @@
 
 import React from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -27,6 +26,7 @@ import { Input } from "@/components/ui/input"
 
 import { clientApi } from "@/lib/api"
 import { showErrorToast } from "@/lib/toast"
+import { useRedirect } from "@/hooks/auth"
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -36,7 +36,7 @@ const registerSchema = z.object({
 type RegisterSchemaType = z.infer<typeof registerSchema>
 
 export default function Register() {
-  const router = useRouter()
+  const { redirectTo } = useRedirect()
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
   })
@@ -49,7 +49,7 @@ export default function Register() {
     try {
       await clientApi.v1.authControllerRegister(data)
 
-      router.replace("/account")
+      redirectTo("/account")
     } catch (error) {
       showErrorToast(error)
     } finally {

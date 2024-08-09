@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 import {
@@ -21,16 +22,24 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const selectedCategoryId = searchParams.get("categoryId")
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>(
+    searchParams.get("categoryId")?.split(",") || []
+  )
 
   const handleCategoryChange = (value: string) => {
-    if (value === selectedCategoryId) {
+    const newCategoryIds = selectedCategoryIds.includes(value)
+      ? selectedCategoryIds.filter((id) => id !== value)
+      : [...selectedCategoryIds, value]
+
+    setSelectedCategoryIds(newCategoryIds)
+
+    if (newCategoryIds.length === 0) {
       router.push("/")
       return
     }
 
     const params = new URLSearchParams()
-    params.set("categoryId", value)
+    params.set("categoryId", newCategoryIds.join(","))
     router.push(`?${params.toString()}`)
   }
 
@@ -52,7 +61,7 @@ export function ProductFilters({ categories }: ProductFiltersProps) {
                   className="flex items-center gap-2 font-normal capitalize"
                 >
                   <Checkbox
-                    checked={category.id === selectedCategoryId}
+                    checked={selectedCategoryIds.includes(category.id)}
                     onCheckedChange={() => handleCategoryChange(category.id)}
                   />
                   {category.name.split("-").join(" ")}

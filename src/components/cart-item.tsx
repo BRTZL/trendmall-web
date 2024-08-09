@@ -1,9 +1,8 @@
 "use client"
 
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { useAddToCart, useRemoveFromCart } from "@/queries/cart"
-import { Loader2, Minus, Plus, Trash2 } from "lucide-react"
+import { Minus, Plus, Trash2 } from "lucide-react"
 
 import { CartItemEntity } from "@/types/api"
 import { showErrorToast, showSuccessToast } from "@/lib/toast"
@@ -16,8 +15,6 @@ type CartItemProps = {
 }
 
 export function CartItem({ item }: CartItemProps) {
-  const router = useRouter()
-
   const thumbnailImage =
     item.product.images[0]?.url || "/product-placeholder.png"
 
@@ -39,7 +36,6 @@ export function CartItem({ item }: CartItemProps) {
         },
       }
     )
-    router.refresh()
   }
   const handleDecrement = () => {
     removeFromCart(
@@ -53,7 +49,6 @@ export function CartItem({ item }: CartItemProps) {
         },
       }
     )
-    router.refresh()
   }
   const handleRemove = () => {
     removeFromCart(
@@ -70,7 +65,6 @@ export function CartItem({ item }: CartItemProps) {
         },
       }
     )
-    router.refresh()
   }
 
   return (

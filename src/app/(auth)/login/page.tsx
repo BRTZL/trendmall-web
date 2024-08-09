@@ -2,7 +2,6 @@
 
 import React from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -27,6 +26,7 @@ import { Input } from "@/components/ui/input"
 
 import { clientApi } from "@/lib/api"
 import { showErrorToast } from "@/lib/toast"
+import { useRedirect } from "@/hooks/auth"
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -36,7 +36,7 @@ const loginSchema = z.object({
 type LoginSchemaType = z.infer<typeof loginSchema>
 
 export default function Login() {
-  const router = useRouter()
+  const { redirectTo } = useRedirect()
   const form = useForm<LoginSchemaType>({ resolver: zodResolver(loginSchema) })
 
   const [isLoading, setIsLoading] = React.useState(false)
@@ -47,7 +47,7 @@ export default function Login() {
     try {
       await clientApi.v1.authControllerLogin(data)
 
-      router.replace("/account")
+      redirectTo("/account")
     } catch (error) {
       showErrorToast(error)
     } finally {

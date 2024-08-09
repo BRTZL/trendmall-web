@@ -2,12 +2,11 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { useAddToCart } from "@/queries/cart"
 import { Loader2, ShoppingBasket } from "lucide-react"
 
 import { ProductEntity } from "@/types/api"
-import { isUserAuthenticatedClient } from "@/lib/client-session"
+import { shimmer, toBase64 } from "@/lib/shimmer"
 import { showErrorToast, showSuccessToast } from "@/lib/toast"
 import { cn } from "@/lib/utils"
 
@@ -18,18 +17,11 @@ type ProductCardProps = {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const router = useRouter()
-
   const thumbnail = product.images[0]?.url || "/product-placeholder.png"
 
   const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart()
 
   const handleButtonClick = () => {
-    if (!isUserAuthenticatedClient()) {
-      showErrorToast(null, "You need to be logged in to add to cart")
-      return router.push("/login")
-    }
-
     addToCart(
       {
         productId: product.id,
@@ -47,17 +39,19 @@ export function ProductCard({ product }: ProductCardProps) {
   }
 
   return (
-    <div className="relative flex flex-col overflow-hidden rounded-lg bg-background shadow-lg transition-shadow duration-200 ease-in-out hover:z-10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl">
+    <div className="relative flex h-96 flex-col overflow-hidden rounded-lg bg-background shadow-lg transition-shadow duration-200 ease-in-out hover:z-10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl">
       <Link href={`/product/${product.id}`} className="flex flex-col">
         <Image
           id={product.id}
           key={product.id}
           src={thumbnail}
           alt={product.name}
-          quality={65}
           width={300}
           height={300}
-          className="size-[300px] w-full bg-muted object-contain"
+          className="size-[300px] w-full bg-background object-contain"
+          priority
+          loading="eager"
+          placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(300, 300))}`}
         />
         <div className="flex flex-col p-4">
           <h3 className="mb-2 text-lg font-semibold">{product.name}</h3>

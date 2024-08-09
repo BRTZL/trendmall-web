@@ -1,3 +1,5 @@
+import { cache } from "react"
+
 import { ProductCard } from "@/components/product-card"
 import { ProductPagination } from "@/components/product-pagination"
 
@@ -10,13 +12,19 @@ type ListingPageProps = {
   }
 }
 
-export default async function Listing(props: ListingPageProps) {
-  const { data: products } = await serverApi.v1.productsControllerFindAll({
+const getProducts = cache(async (props: ListingPageProps) => {
+  const res = await serverApi.v1.productsControllerFindAll({
     limit: 12,
     page: props.searchParams.page || 1,
     inStock: true,
     categoryId: props.searchParams.categoryId,
   })
+
+  return res.data
+})
+
+export default async function Listing(props: ListingPageProps) {
+  const products = await getProducts(props)
 
   return (
     <div>
