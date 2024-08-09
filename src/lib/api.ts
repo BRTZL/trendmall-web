@@ -3,7 +3,7 @@ import { redirectToLogin } from "@/actions/router"
 import { Api } from "@/types/api"
 
 export const clientApi = new Api({
-  baseURL: "http://localhost:3001/",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
 })
 

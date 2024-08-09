@@ -1,15 +1,18 @@
 import "server-only"
 
-import { headers } from "next/headers"
+import { cookies } from "next/headers"
 import { redirectToLogin } from "@/actions/router"
+import { AUTHENTICATION_COOKIE_NAME } from "@/constants"
 
 import { Api } from "@/types/api"
 
 export const serverApi = new Api({
-  baseURL: "http://localhost:3001/",
+  baseURL: process.env.API_URL,
   withCredentials: true,
   headers: {
-    Cookie: headers().get("cookie"),
+    Cookie: `${AUTHENTICATION_COOKIE_NAME}=${
+      cookies().get(AUTHENTICATION_COOKIE_NAME)?.value
+    }`,
   },
 })
 

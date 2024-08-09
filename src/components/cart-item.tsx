@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import { PLACEHOLDER_IMAGE } from "@/constants"
 import { useAddToCart, useRemoveFromCart } from "@/queries/cart"
 import { Minus, Plus, Trash2 } from "lucide-react"
 
@@ -15,8 +16,7 @@ type CartItemProps = {
 }
 
 export function CartItem({ item }: CartItemProps) {
-  const thumbnailImage =
-    item.product.images[0]?.url || "/product-placeholder.png"
+  const thumbnailImage = item.product.images[0]?.url || PLACEHOLDER_IMAGE
 
   const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart()
   const { mutate: removeFromCart, isPending: isRemovingFromCart } =

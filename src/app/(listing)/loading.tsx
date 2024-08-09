@@ -7,7 +7,10 @@ export default function ListingLoading() {
     <div>
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 12 }).map((_, index) => (
-          <div className="relative flex h-96 flex-col overflow-hidden rounded-lg bg-background shadow-lg transition-shadow duration-200 ease-in-out hover:z-10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl">
+          <div
+            key={`product-shimmer-${index}`}
+            className="relative flex h-96 flex-col overflow-hidden rounded-lg bg-background shadow-lg transition-shadow duration-200 ease-in-out hover:z-10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl"
+          >
             <Image
               key={index}
               alt="Product Shimmer"

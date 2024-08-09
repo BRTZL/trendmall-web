@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import { Paths, PLACEHOLDER_IMAGE } from "@/constants"
 import { useAddToCart } from "@/queries/cart"
 import { Loader2, ShoppingBasket } from "lucide-react"
 
@@ -17,7 +18,7 @@ type ProductCardProps = {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const thumbnail = product.images[0]?.url || "/product-placeholder.png"
+  const thumbnail = product.images[0]?.url || PLACEHOLDER_IMAGE
 
   const { mutate: addToCart, isPending: isAddingToCart } = useAddToCart()
 
@@ -40,7 +41,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div className="relative flex h-96 flex-col overflow-hidden rounded-lg bg-background shadow-lg transition-shadow duration-200 ease-in-out hover:z-10 hover:-translate-y-1 hover:scale-105 hover:shadow-xl">
-      <Link href={`/product/${product.id}`} className="flex flex-col">
+      <Link href={Paths.productDetail(product.id)} className="flex flex-col">
         <Image
           id={product.id}
           key={product.id}

@@ -1,3 +1,4 @@
+import { PLACEHOLDER_IMAGE } from "@/constants"
 import { faker } from "@faker-js/faker"
 import { StarIcon } from "lucide-react"
 
@@ -16,7 +17,7 @@ export function ProductReview() {
   return (
     <div className="flex gap-4">
       <Avatar className="size-10 border">
-        <AvatarImage src="/placeholder-user.jpg" />
+        <AvatarImage src={PLACEHOLDER_IMAGE} />
         <AvatarFallback>{initials}</AvatarFallback>
       </Avatar>
       <div className="grid gap-2">

@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Paths } from "@/constants"
 import { useGetAddresses } from "@/queries/address"
 import { useCheckout } from "@/queries/order"
 import { Loader2 } from "lucide-react"
@@ -26,10 +28,9 @@ import {
 } from "@/components/ui/select"
 
 import { showErrorToast, showSuccessToast } from "@/lib/toast"
-import { useRedirect } from "@/hooks/auth"
 
 export function CheckoutButton() {
-  const { redirectTo } = useRedirect()
+  const { push } = useRouter()
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null
@@ -46,7 +47,7 @@ export function CheckoutButton() {
     checkout(selectedAddressId, {
       onSuccess: () => {
         showSuccessToast("Order completed successfully.")
-        redirectTo("/account")
+        push(Paths.account)
       },
       onError: (error) => {
         showErrorToast(error)

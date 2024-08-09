@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { Paths } from "@/constants"
 import { useGetCart } from "@/queries/cart"
 import { ShoppingCart } from "lucide-react"
 
@@ -9,7 +10,7 @@ export function CartButton() {
 
   return (
     <Link
-      href="/cart"
+      href={Paths.cart}
       prefetch={false}
       className="relative flex flex-row items-center gap-1 hover:opacity-80"
     >

@@ -11,12 +11,12 @@ import { CartForm } from "./cart-form"
 export default async function Cart() {
   await ensureUserIsAuthenticated()
 
-  const cart = await serverApi.v1.cartControllerGetCart()
+  const { data: cart } = await serverApi.v1.cartControllerGetCart()
 
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <h1 className="mb-8 text-2xl font-bold">Your Cart</h1>
-      {cart.data.length === 0 ? (
+      {cart.length === 0 ? (
         <EmptyPlaceholder>
           <EmptyPlaceholder.Icon />
           <EmptyPlaceholder.Title>Your cart is empty</EmptyPlaceholder.Title>
@@ -29,7 +29,7 @@ export default async function Cart() {
           </Link>
         </EmptyPlaceholder>
       ) : (
-        <CartForm items={cart.data} />
+        <CartForm items={cart} />
       )}
     </div>
   )

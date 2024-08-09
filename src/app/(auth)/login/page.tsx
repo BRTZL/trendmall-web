@@ -2,6 +2,8 @@
 
 import React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { Paths } from "@/constants"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -26,7 +28,6 @@ import { Input } from "@/components/ui/input"
 
 import { clientApi } from "@/lib/api"
 import { showErrorToast } from "@/lib/toast"
-import { useRedirect } from "@/hooks/auth"
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -36,7 +37,7 @@ const loginSchema = z.object({
 type LoginSchemaType = z.infer<typeof loginSchema>
 
 export default function Login() {
-  const { redirectTo } = useRedirect()
+  const { push } = useRouter()
   const form = useForm<LoginSchemaType>({ resolver: zodResolver(loginSchema) })
 
   const [isLoading, setIsLoading] = React.useState(false)
@@ -47,7 +48,7 @@ export default function Login() {
     try {
       await clientApi.v1.authControllerLogin(data)
 
-      redirectTo("/account")
+      push(Paths.account)
     } catch (error) {
       showErrorToast(error)
     } finally {
@@ -105,7 +106,7 @@ export default function Login() {
           </Form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="underline">
+            <Link href={Paths.register} className="underline">
               Sign up
             </Link>
           </div>
