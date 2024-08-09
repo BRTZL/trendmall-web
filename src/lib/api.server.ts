@@ -9,11 +9,13 @@ import { Api } from "@/types/api"
 export const serverApi = new Api({
   baseURL: process.env.API_URL,
   withCredentials: true,
-  headers: {
-    Cookie: `${AUTHENTICATION_COOKIE_NAME}=${
-      cookies().get(AUTHENTICATION_COOKIE_NAME)?.value
-    }`,
-  },
+})
+
+serverApi.instance.interceptors.request.use((config) => {
+  config.headers["Cookie"] = `${AUTHENTICATION_COOKIE_NAME}=${
+    cookies().get(AUTHENTICATION_COOKIE_NAME)?.value
+  }`
+  return config
 })
 
 serverApi.instance.interceptors.response.use(
